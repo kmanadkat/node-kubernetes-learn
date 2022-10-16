@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - 14
+
+services:
+  - docker
+
+# Pre-testing installs
+install:
+  - echo "nothing needs to be installed"
+
+# Scripts to be run such as tests
+before_script:
+  - echo "no tests"
+
+script:
+  - docker --version
+  - docker build -t simple-node --build-arg FAVORITE_FOOD=${FAVORITE_FOOD} .
+  - docker tag simple-node kmanadkat/simple-node:latest
+
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push kmanadkat/simple-node
