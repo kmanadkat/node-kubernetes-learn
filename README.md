@@ -2,19 +2,34 @@
 
 This is a very simple, bare-bones NodeJS project created for you to use with Docker.
 
-## Local Setup
+### EKS Setup On AWS Steps
+0. Prerequisites - Install [Kubetctl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) & [aws-iam authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html), IAM user with Administrator access
 
-**_Note_**: This is only needed if you want to run the app locally. You don't need to install the dependencies or run the server if you are running the code inside a Docker container.
+1. Create IAM Role For [EKS-Cluster](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html) from Administrator account (not root)
 
-- Install dependencies: `npm install`
-- Run server: `node server.js`
+2. Create IAM Role for [Nodes](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html#create-worker-node-role) from Administrator account (not root)
 
-## Container Setup
+   > Attach `AmazonEKS_CNI_Policy` to the role.
 
-- Build image: `docker build .`
-- Run container with image: `docker run {image_id}` where `image_id` can be retrieved by running `docker images` and found under the column `IMAGE ID`
-- You can use the `-d` flag to run the container in the background. This will enable you to run other commands in your terminal while the container is running.
+3. Create Cluster on AWS EKS from administrator account
 
-## Container Teardown
+   - Use default VPC & Subnets
+   - Donot link existing security group (default), instead aws will create dedicated security group
+   - Allow public access.
+   - Add Node Group > t3.micro > max & min nodes > default subnets
+   - Enable SSH > Allow SSH for All
 
-- Remove container: `docker kill {container_id}` where `container_id` can be retrieved by running `docker ps` and found under the column `CONTAINER ID`
+4. [Create kubeconfig file](https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html) automatically
+
+5. Link `deployment.yaml` & `service.yaml`
+   ```shell
+   kubectl apply -f deployment.yaml
+   kubectl apply -f service.yaml
+   ```
+
+6. Fetch Pods information with 
+   `kubectl get pods` 
+   `kubectl describe services`
+
+7. Fetch Logs from pods
+   `kubectl logs <pod-id>`
