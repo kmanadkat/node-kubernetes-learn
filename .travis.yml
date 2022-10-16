@@ -15,7 +15,7 @@ before_script:
 
 script:
   - docker --version
-  - docker build -t simple-node --build-arg FAVORITE_FOOD=${FAVORITE_FOOD} .
+  - docker build -t simple-node .
   - docker tag simple-node kmanadkat/simple-node:latest
 
 after_success:
